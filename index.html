@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atelier Noir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     ATELIER NOIR — plantilla de tienda
+     Para AÑADIR / EDITAR productos, ve al array "PRODUCTOS"
+     dentro de la etiqueta <script> al final del archivo.
+     ============================================================ */
+
+  :root{
+    --noir: #0d0c0b;
+    --noir-2: #141311;
+    --ivory: #ede8df;
+    --ivory-dim: rgba(237,232,223,0.55);
+    --brass: #a8875a;
+    --wine: #5c2a2a;
+    --line: rgba(237,232,223,0.14);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:var(--noir);
+    color:var(--ivory);
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    overflow-x:hidden;
+  }
+
+  a{ color:inherit; }
+
+  ::selection{ background:var(--brass); color:var(--noir); }
+
+  :focus-visible{
+    outline:2px solid var(--brass);
+    outline-offset:3px;
+  }
+
+  .serif{ font-family:'Cormorant Garamond', serif; }
+  .mono{ font-family:'Space Mono', monospace; }
+
+  /* ---------- spine / firma de marca ---------- */
+  .spine{
+    position:fixed;
+    left:0; top:0;
+    height:100vh;
+    width:56px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:40;
+    pointer-events:none;
+    border-right:1px solid var(--line);
+  }
+  .spine span{
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    letter-spacing:0.35em;
+    font-size:0.72rem;
+    color:var(--ivory-dim);
+    text-transform:uppercase;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    padding:28px 40px 28px 88px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:relative;
+    z-index:20;
+  }
+  header .brand{
+    font-size:1.05rem;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+  }
+  header nav a{
+    text-decoration:none;
+    color:var(--ivory-dim);
+    font-size:0.85rem;
+    letter-spacing:0.1em;
+    margin-left:28px;
+    transition:color .25s ease;
+  }
+  header nav a:hover{ color:var(--brass); }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:88vh;
+    padding:0 40px 60px 88px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+  }
+  .hero .eyebrow{
+    color:var(--brass);
+    text-transform:uppercase;
+    letter-spacing:0.3em;
+    font-size:0.75rem;
+    margin-bottom:22px;
+  }
+  .hero h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-style:italic;
+    font-size:clamp(2.6rem, 7vw, 6rem);
+    line-height:1.02;
+    margin:0 0 28px 0;
+    max-width:14ch;
+  }
+  .hero p{
+    max-width:38ch;
+    color:var(--ivory-dim);
+    font-size:1.02rem;
+    line-height:1.7;
+  }
+  .hero .scroll-cue{
+    margin-top:56px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    color:var(--ivory-dim);
+    font-size:0.75rem;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+  }
+  .scroll-cue .line{
+    width:40px; height:1px;
+    background:var(--brass);
+  }
+
+  /* ---------- catálogo ---------- */
+  .catalog{
+    padding:100px 40px 60px 88px;
+    border-top:1px solid var(--line);
+  }
+  .catalog-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:56px;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .catalog-head h2{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-size:2.2rem;
+    margin:0;
+  }
+  .catalog-head .count{
+    color:var(--ivory-dim);
+    font-size:0.85rem;
+    letter-spacing:0.05em;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+
+  .card{
+    background:var(--noir);
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  .card .frame{
+    aspect-ratio:4/5;
+    overflow:hidden;
+    background:var(--noir-2);
+    position:relative;
+  }
+  .card .frame img{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+    filter:grayscale(15%);
+    transition:transform .6s cubic-bezier(.2,.7,.2,1), filter .6s ease;
+  }
+  .card:hover .frame img{
+    transform:scale(1.045);
+    filter:grayscale(0%);
+  }
+  .card .ref{
+    position:absolute;
+    top:14px; left:14px;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    color:var(--ivory);
+    background:rgba(13,12,11,0.65);
+    padding:4px 9px;
+    border:1px solid var(--line);
+  }
+  .card .body{
+    padding:22px 24px 26px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1;
+  }
+  .card .name{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:1.35rem;
+    margin:0;
+  }
+  .card .desc{
+    color:var(--ivory-dim);
+    font-size:0.85rem;
+    line-height:1.55;
+    margin:2px 0 10px;
+  }
+  .card .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:auto;
+  }
+  .card .price{
+    font-size:0.95rem;
+    letter-spacing:0.03em;
+    color:var(--brass);
+  }
+  .card .buy{
+    text-decoration:none;
+    font-size:0.78rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ivory);
+    padding-bottom:2px;
+    border-bottom:1px solid var(--brass);
+    transition:opacity .25s ease;
+  }
+  .card .buy:hover{ opacity:0.65; }
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:36px 40px 40px 88px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    color:var(--ivory-dim);
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+  }
+  footer a{ text-decoration:none; margin-left:18px; color:var(--ivory-dim); }
+  footer a:hover{ color:var(--brass); }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .grid{ grid-template-columns:repeat(2,1fr); }
+  }
+  @media (max-width:640px){
+    .spine{ display:none; }
+    header, .hero, .catalog, footer{ padding-left:24px; padding-right:24px; }
+    .grid{ grid-template-columns:1fr; }
+    header nav a{ margin-left:16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="spine"><span>Atelier Noir — Piezas escogidas</span></div>
+
+  <header>
+    <div class="brand serif" style="font-style:italic;">Atelier Noir</div>
+    <nav>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow mono">N° Colección — Actual</div>
+    <h1>Piezas elegidas,<br>pocas y bien hechas.</h1>
+    <p>Cada objeto de Atelier Noir se selecciona por su forma, su materia y su duración. Sin exceso. Sin prisa.</p>
+    <div class="scroll-cue"><div class="line"></div> Ver catálogo</div>
+  </section>
+
+  <section class="catalog" id="catalogo">
+    <div class="catalog-head">
+      <h2 class="serif">Catálogo</h2>
+      <div class="count mono" id="conteo">— piezas</div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer id="contacto">
+    <div>© <span id="anio"></span> Atelier Noir</div>
+    <div>
+      <a href="mailto:hola@ateliernoir.com">Email</a>
+      <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </footer>
+
+<script>
+  /* ============================================================
+     PRODUCTOS
+     Edita, añade o borra objetos de esta lista para actualizar
+     tu tienda. Cada producto necesita:
+
+       nombre      -> nombre del producto
+       descripcion -> una frase corta (opcional, puedes dejar "")
+       precio      -> texto libre, ej: "45 €" o "$45.00"
+       imagen      -> URL de la foto del producto
+       enlace      -> URL a donde va la persona al hacer clic en "Adquirir"
+                      (tu tienda online, WhatsApp, Instagram DM, etc.)
+
+     Puedes tener tantos productos como quieras, solo copia y
+     pega un bloque { ... } más dentro de los corchetes [ ].
+     ============================================================ */
+
+  const PRODUCTOS = [
+    {
+      nombre: "Abrigo Nocturne",
+      descripcion: "Lana cepillada, corte oversize.",
+      precio: "189 Bs",
+      imagen: "https://i.imgur.com/YRCtgoh.jpeg",
+      enlace: "https://wa.me/59177404954"
+    },
+    {
+      nombre: "Bolso Ébano",
+      descripcion: "Cuero vegetal curtido a mano.",
+      precio: "134 €",
+      imagen: "https://picsum.photos/seed/noir2/800/1000",
+      enlace: "https://wa.me/00000000000"
+    },
+    {
+      nombre: "Anillo Fumée",
+      descripcion: "Plata oxidada, piedra de ónix.",
+      precio: "58 €",
+      imagen: "https://picsum.photos/seed/noir3/800/1000",
+      enlace: "https://wa.me/00000000000"
+    },
+    {
+      nombre: "Bufanda Cendre",
+      descripcion: "Mezcla de lana y seda.",
+      precio: "72 €",
+      imagen: "https://picsum.photos/seed/noir4/800/1000",
+      enlace: "https://wa.me/00000000000"
+    },
+    {
+      nombre: "Camisa Ombre",
+      descripcion: "Algodón lavado, botones de nácar.",
+      precio: "95 €",
+      imagen: "https://picsum.photos/seed/noir5/800/1000",
+      enlace: "https://wa.me/00000000000"
+    },
+    {
+      nombre: "Cinturón Suede",
+      descripcion: "Gamuza negra, hebilla de latón.",
+      precio: "49 €",
+      imagen: "https://picsum.photos/seed/noir6/800/1000",
+      enlace: "https://wa.me/00000000000"
+    }
+  ];
+
+  const grid = document.getElementById('grid');
+  const conteo = document.getElementById('conteo');
+
+  function numeroRef(i){
+    return "N°" + String(i+1).padStart(2,'0');
+  }
+
+  PRODUCTOS.forEach((p, i) => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="frame">
+        <img src="${p.imagen}" alt="${p.nombre}" loading="lazy">
+        <div class="ref mono">${numeroRef(i)}</div>
+      </div>
+      <div class="body">
+        <p class="name">${p.nombre}</p>
+        ${p.descripcion ? `<p class="desc">${p.descripcion}</p>` : ''}
+        <div class="row">
+          <span class="price mono">${p.precio}</span>
+          <a class="buy" href="${p.enlace}" target="_blank" rel="noopener">Adquirir</a>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  conteo.textContent = PRODUCTOS.length + (PRODUCTOS.length === 1 ? " pieza" : " piezas");
+  document.getElementById('anio').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
